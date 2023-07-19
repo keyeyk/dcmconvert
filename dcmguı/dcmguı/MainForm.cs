@@ -9,6 +9,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Dicom;
+using Dicom.Imaging;
+
 
 namespace dcmguı
 {
@@ -45,25 +48,26 @@ namespace dcmguı
             }
         }
 
+
         private void ConvertDCMtoPNGAndShow(string dcmFilePath)
         {
             try
             {
-                using (Image image = Image.FromFile(dcmFilePath))
-                {
-                    // Convert DICOM to PNG
-                    string pngFilePath = dcmFilePath + ".png";
-                    image.Save(pngFilePath, ImageFormat.Png);
+                DicomFile dicomFile = DicomFile.Open(dcmFilePath);
+                DicomImage dicomImage = new DicomImage(dicomFile.Dataset);
 
-                    // Show PNG in PictureBox
-                    pictureBox1.Image = Image.FromFile(pngFilePath);
-                }
+                // Create a bitmap from the DICOM image
+                Bitmap bitmap = dicomImage.RenderImage().As<Bitmap>();
+
+                // Show the bitmap in PictureBox
+                pictureBox1.Image = bitmap;
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Hata oluştu: " + ex.Message, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
 
 
     }
